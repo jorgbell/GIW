@@ -11,12 +11,56 @@ con nadie. Declaramos además que no hemos realizado de manera deshonesta ningun
 actividad que pueda mejorar nuestros resultados ni perjudicar los resultados de los demás.
 """
 from flask import Flask, request, session, render_template
+import json
 app = Flask(__name__)
 
 
-###
-### <DEFINIR AQUI EL SERVICIO REST>
-###
+asignaturas = []
+id = 0
+
+
+@app.route('/asignaturas', methods=['DELETE'])
+def deleteAsignaturas():
+    global asignaturas, id
+
+    asignaturas = []
+    id = 0
+
+    return ('Borradas todas las asignaturas',204)
+
+
+@app.route('/asignaturas', methods=['POST'])
+def postAsignatura():
+    asig = request.get_json()
+
+    if 'nombre' not in asig or type(asig['nombre']) != str:
+        return ('Error', 400)
+
+    if 'numero_alumnos' not in asig or type(asig['numero_alumnos']) != int:
+        return ('Error', 400)
+
+    if 'horario' not in asig or type(asig['horario']) != list:
+        return ('Error', 400)
+
+    global id, asignaturas
+    asig['id'] = id
+    id+=1
+
+    asignaturas.append(asig)
+
+    return ("Todo bien", 201)
+
+
+@app.route('/asignaturas', methods=['GET'])
+def getAsignaturas():
+    global asignaturas
+
+    L = []
+    for a in asignaturas:
+        aId = a['id']
+        L.append(f'/asignaturas/{aId}')
+    
+    return ({'asignaturas':L}, 200)
 
 
 class FlaskConfig:
