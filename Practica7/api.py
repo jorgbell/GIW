@@ -11,7 +11,7 @@ con nadie. Declaramos además que no hemos realizado de manera deshonesta ningun
 actividad que pueda mejorar nuestros resultados ni perjudicar los resultados de los demás.
 """
 from flask import Flask, request, session, render_template
-import json
+
 app = Flask(__name__)
 
 
@@ -55,12 +55,54 @@ def postAsignatura():
 def getAsignaturas():
     global asignaturas
 
-    L = []
-    for a in asignaturas:
+    alumnosGte = request.args.get('alumnos_gte')
+    page = request.args.get('page')
+    perPage = request.args.get('per_page')
+
+    if (page and not perPage) or (not page and perPage): # Obligatorio que salgan los dos juntos
+        return ('BAD REQUEST', 400)
+
+    asignaturasFiltradas = asignaturas
+
+    # filtrar por numero de alumnos
+    if alumnosGte:
+        alumnosGte = int(alumnosGte)
+        asignaturasFiltradas = filter((lambda a: a['numero_alumnos'] >= alumnosGte), asignaturasFiltradas)
+
+    numeroAsigFiltradasGte = len(asignaturasFiltradas)
+
+    # paginar
+    if page and perPage:
+        page = int(page)
+        perPage = int(perPage)
+
+        ini = (page - 1) * perPage
+        fin = ini + perPage
+
+        asignaturasFiltradas = asignaturasFiltradas[ini:fin]
+
+    # generar links de las asignaturas
+    asigLinks = []
+    for a in asignaturasFiltradas:
         aId = a['id']
-        L.append(f'/asignaturas/{aId}')
+        asigLinks.append(f'/asignaturas/{aId}')
     
-    return ({'asignaturas':L}, 200)
+    if len(asignaturasFiltradas) != numeroAsigFiltradasGte:
+        return ({'asignaturas':asigLinks}, 206) # partial content
+
+    return ({'asignaturas':asigLinks}, 200) # OK
+
+
+@app.route('/asignaturas/<int:num>', methods=['DELETE'])
+def getAsignatura(num):
+    global asignaturas
+    aux = [a for a in asignaturas if a['id'] != num]
+
+    if len(aux) == len(asignaturas):  # No encontrado
+        return ('NOT FOUND', 404)
+
+    asignaturas = aux
+    return ('NO CONTENT', 204)
 
 
 class FlaskConfig:
