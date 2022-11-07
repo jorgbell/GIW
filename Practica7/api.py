@@ -19,6 +19,23 @@ asignaturas = []
 id = 0
 
 
+
+def esAsignaturaValida(asig):
+    if 'nombre' not in asig or type(asig['nombre']) != str:
+        return False
+
+    if 'numero_alumnos' not in asig or type(asig['numero_alumnos']) != int:
+        return False
+
+    if 'horario' not in asig or type(asig['horario']) != list:
+        return False
+
+    # TODO -> Chequear si la lista horario esta bien formada por dentro
+    # TODO -> Chequear si asig no tiene campos extra que no deberian existir
+
+    return True
+
+
 @app.route('/asignaturas', methods=['DELETE'])
 def deleteAsignaturas():
     global asignaturas, id
@@ -33,14 +50,8 @@ def deleteAsignaturas():
 def postAsignatura():
     asig = request.get_json()
 
-    if 'nombre' not in asig or type(asig['nombre']) != str:
-        return ('Error', 400)
-
-    if 'numero_alumnos' not in asig or type(asig['numero_alumnos']) != int:
-        return ('Error', 400)
-
-    if 'horario' not in asig or type(asig['horario']) != list:
-        return ('Error', 400)
+    if not esAsignaturaValida(asig):
+        return ('Asignatura no valida', 400)
 
     global id, asignaturas
     asig['id'] = id
@@ -48,7 +59,7 @@ def postAsignatura():
 
     asignaturas.append(asig)
 
-    return ("Todo bien", 201)
+    return ("Asignatura creada con exito", 201)
 
 
 @app.route('/asignaturas', methods=['GET'])
@@ -60,7 +71,7 @@ def getAsignaturas():
     perPage = request.args.get('per_page')
 
     if (page and not perPage) or (not page and perPage): # Obligatorio que salgan los dos juntos
-        return ('BAD REQUEST', 400)
+        return ('Los parametros page y per_page tienen que aparecer juntos', 400)
 
     asignaturasFiltradas = asignaturas
 
@@ -94,15 +105,56 @@ def getAsignaturas():
 
 
 @app.route('/asignaturas/<int:num>', methods=['DELETE'])
-def getAsignatura(num):
+def deleteAsignatura(num):
     global asignaturas
     aux = [a for a in asignaturas if a['id'] != num]
 
     if len(aux) == len(asignaturas):  # No encontrado
-        return ('NOT FOUND', 404)
+        return ('Asignatura no encontrada', 404)
 
     asignaturas = aux
-    return ('NO CONTENT', 204)
+    return ('Asignatura borrada con exito', 204)
+
+
+@app.route('/asignaturas/<int:num>', methods=['GET'])
+def getAsignatura(num):
+    global asignaturas
+    
+    # buscar la asignatura con id num
+    for a in asignaturas:
+        if a['id'] == num:
+            return (a, 200)
+
+    return ('Asignatura no encontrada', 404)
+
+
+@app.route('/asignaturas/<int:num>', methods=['PUT'])
+def replaceAsignatura(num):
+    newAsig = request.get_json()
+
+    if not esAsignaturaValida(newAsig):
+        return ('Asignatura no valida', 400)
+
+    global asignaturas
+
+    # buscar la asignatura con id num
+    oldAsig = None
+    for a in asignaturas:
+        if a['id'] == num:
+            oldAsig = a
+
+    if not oldAsig:
+        return ('Asignatura no encontrada', 404)
+
+    # copiar id
+    newAsig['id'] = oldAsig['id']
+
+    # actualizar la asig en la lista
+    for i, a in enumerate(asignaturas):
+        if a['id'] == num:
+            asignaturas[i] = newAsig
+
+    return ('Asignatura modificada con exito', 200)
 
 
 class FlaskConfig:
