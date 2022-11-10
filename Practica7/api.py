@@ -11,29 +11,49 @@ con nadie. Declaramos además que no hemos realizado de manera deshonesta ningun
 actividad que pueda mejorar nuestros resultados ni perjudicar los resultados de los demás.
 """
 from flask import Flask, request, session, render_template
+from schema import *
 
 app = Flask(__name__)
+
+
+DIA_SCHEMA = Schema(
+    {
+        "dia": str,
+        "hora_inicio": int,
+        "hora_final": int
+    }
+)
+
+def checkHorario(h):
+    for d in h:
+        if not DIA_SCHEMA.is_valid(d):
+            return False
+
+    return True
+
+ASIG_SCHEMA = Schema({
+    "nombre": str,
+    "numero_alumnos": int,
+    "horario": checkHorario
+})
+
+CAMPO_SCHEMA = Schema({
+    Optional("nombre"): str,
+    Optional("numero_alumnos"): int,
+    Optional("horario"): checkHorario
+})
 
 
 asignaturas = []
 id = 0
 
 
-
 def esAsignaturaValida(asig):
-    if 'nombre' not in asig or type(asig['nombre']) != str:
-        return False
+    return ASIG_SCHEMA.is_valid(asig)
 
-    if 'numero_alumnos' not in asig or type(asig['numero_alumnos']) != int:
-        return False
 
-    if 'horario' not in asig or type(asig['horario']) != list:
-        return False
-
-    # TODO -> Chequear si la lista horario esta bien formada por dentro
-    # TODO -> Chequear si asig no tiene campos extra que no deberian existir
-
-    return True
+def esCampoValido(campoJson):
+    return len(campoJson) == 1 and CAMPO_SCHEMA.is_valid(campoJson)
 
 
 @app.route('/asignaturas', methods=['DELETE'])
@@ -155,6 +175,42 @@ def replaceAsignatura(num):
             asignaturas[i] = newAsig
 
     return ('Asignatura modificada con exito', 200)
+
+
+@app.route('/asignaturas/<int:num>', methods=['PATCH'])
+def replaceField(num):
+    campoJson = request.get_json()
+
+    if not esCampoValido(campoJson):
+        return ('El json del campo no es valido', 400)
+
+    # buscar la asignatura con id num
+    asig = None
+    global asignaturas
+    for a in asignaturas:
+        if a['id'] == num:
+            asig = a
+
+    if not asig:
+        return ('Asignatura no encontrada', 404)
+
+    # modificar el campo
+    for i in campoJson:
+        asig[i] = campoJson[i]
+
+    return ('Campo actualizado con exito', 200)
+
+
+@app.route('/asignaturas/<int:num>/horario', methods=['GET'])
+def getHorario(num):
+    global asignaturas
+    
+    # buscar la asignatura con id num
+    for a in asignaturas:
+        if a['id'] == num:
+            return ({'horario': a['horario']}, 200)
+
+    return ('Asignatura no encontrada', 404)
 
 
 class FlaskConfig:
