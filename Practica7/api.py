@@ -68,18 +68,19 @@ def deleteAsignaturas():
 
 @app.route('/asignaturas', methods=['POST'])
 def postAsignatura():
+    global id, asignaturas
+
     asig = request.get_json()
 
     if not esAsignaturaValida(asig):
         return ('Asignatura no valida', 400)
 
-    global id, asignaturas
     asig['id'] = id
     id+=1
 
     asignaturas.append(asig)
 
-    return ("Asignatura creada con exito", 201)
+    return ({'id': asig['id']}, 201)
 
 
 @app.route('/asignaturas', methods=['GET'])
@@ -98,7 +99,7 @@ def getAsignaturas():
     # filtrar por numero de alumnos
     if alumnosGte:
         alumnosGte = int(alumnosGte)
-        asignaturasFiltradas = filter((lambda a: a['numero_alumnos'] >= alumnosGte), asignaturasFiltradas)
+        asignaturasFiltradas = [a for a in asignaturas if a['numero_alumnos'] >= alumnosGte]
 
     numeroAsigFiltradasGte = len(asignaturasFiltradas)
 
@@ -118,7 +119,11 @@ def getAsignaturas():
         aId = a['id']
         asigLinks.append(f'/asignaturas/{aId}')
     
-    if len(asignaturasFiltradas) != numeroAsigFiltradasGte:
+    if perPage==5 and page==1 and alumnosGte==10:
+        print(len(asigLinks))
+        print(len(asignaturas))
+
+    if len(asigLinks) != len(asignaturas):
         return ({'asignaturas':asigLinks}, 206) # partial content
 
     return ({'asignaturas':asigLinks}, 200) # OK
@@ -127,6 +132,7 @@ def getAsignaturas():
 @app.route('/asignaturas/<int:num>', methods=['DELETE'])
 def deleteAsignatura(num):
     global asignaturas
+
     aux = [a for a in asignaturas if a['id'] != num]
 
     if len(aux) == len(asignaturas):  # No encontrado
@@ -150,12 +156,9 @@ def getAsignatura(num):
 
 @app.route('/asignaturas/<int:num>', methods=['PUT'])
 def replaceAsignatura(num):
-    newAsig = request.get_json()
-
-    if not esAsignaturaValida(newAsig):
-        return ('Asignatura no valida', 400)
-
     global asignaturas
+
+    newAsig = request.get_json()
 
     # buscar la asignatura con id num
     oldAsig = None
@@ -165,6 +168,9 @@ def replaceAsignatura(num):
 
     if not oldAsig:
         return ('Asignatura no encontrada', 404)
+
+    if not esAsignaturaValida(newAsig):
+        return ('Asignatura no valida', 400)
 
     # copiar id
     newAsig['id'] = oldAsig['id']
@@ -179,20 +185,21 @@ def replaceAsignatura(num):
 
 @app.route('/asignaturas/<int:num>', methods=['PATCH'])
 def replaceField(num):
+    global asignaturas
+
     campoJson = request.get_json()
-
-    if not esCampoValido(campoJson):
-        return ('El json del campo no es valido', 400)
-
+    
     # buscar la asignatura con id num
     asig = None
-    global asignaturas
     for a in asignaturas:
         if a['id'] == num:
             asig = a
 
     if not asig:
         return ('Asignatura no encontrada', 404)
+
+    if not esCampoValido(campoJson):
+        return ('El json del campo no es valido', 400)
 
     # modificar el campo
     for i in campoJson:
