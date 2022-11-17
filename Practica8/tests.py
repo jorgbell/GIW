@@ -11,7 +11,7 @@ $ python -m unittest tests.TestPersistencia.test_usuarios_validos
 
 import unittest
 from mongoengine.errors import ValidationError
-from mongoengine import connect
+from mongoengine import connect, disconnect
 from gr02_mongoengine import Producto, Linea, Pedido, Tarjeta, Usuario
 import inspect
 
