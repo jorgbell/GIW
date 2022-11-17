@@ -1,3 +1,9 @@
+# GIW 2022-23
+# Práctica 08
+# Grupo 02
+# Autores: Diego Revenga González, Raul Blas Ruiz, Jorge Bello Martin, Eva Lucas Leiro
+
+
 from mongoengine import *
 
 

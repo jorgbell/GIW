@@ -1,8 +1,8 @@
 """
 GIW 2022-23
-Práctica NN
-Grupo XX
-Autores: XX, YY, ZZ,
+Práctica 07
+Grupo 02
+Autores: Diego Revenga González, Raul Blas Ruiz, Jorge Bello Martin, Eva Lucas Leiro
 
 (Nombres completos de los autores) declaramos que esta solución es fruto exclusivamente
 de nuestro trabajo personal. No hemos sido ayudados por ninguna otra persona ni hemos
