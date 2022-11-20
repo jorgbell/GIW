@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Configura el segundo factor de seguridad</h1>
+    <h2>Nickname: {{ nickname }}</h2>
+    <h2>Secreto TOTP: {{ secret }}</h2>
+    <img src="{{ qrcode(secret_url) }}" alt="Si el codigo QR no carga, puedes configurar el TOTP manualmente con el secreto TOTP">
+
+</body>
+</html>
