@@ -10,6 +10,7 @@ from flask import Flask, request, session, render_template
 import requests
 import json
 from urllib.parse import urlencode
+from datetime import datetime
 
 
 app = Flask(__name__)
@@ -33,12 +34,10 @@ DISCOVERY_DOC = 'https://accounts.google.com/.well-known/openid-configuration'
 # https://developers.google.com/identity/openid-connect/openid-connect#validatinganidtoken
 TOKENINFO_ENDPOINT = 'https://oauth2.googleapis.com/tokeninfo'
 
-DESCUBRIMIENTO_URL = 'https://accounts.google.com/.well-known/openid-configuration'
-
 
 @app.route('/login_google', methods=['GET'])
 def login_google():
-    descubimiento_json = json.loads(requests.request('GET', DESCUBRIMIENTO_URL).text)
+    descubimiento_json = json.loads(requests.request('GET', DISCOVERY_DOC).text)
     auth_base_url = descubimiento_json['authorization_endpoint']
 
     parametros = {
@@ -58,7 +57,7 @@ def login_google():
 def token():
     respuesta = request.args
 
-    descubimiento_json = json.loads(requests.request('GET', DESCUBRIMIENTO_URL).text)
+    descubimiento_json = json.loads(requests.request('GET', DISCOVERY_DOC).text)
     token_url = descubimiento_json['token_endpoint']
 
     parametros = {
@@ -71,10 +70,22 @@ def token():
 
     datos = json.loads(requests.request('POST', token_url, data=parametros).text)
 
-    # VERIFICAR EL JWT
-    # SACAR EN UNA PAGINA LA INFO DEL USUARIO
+    # Verificar JWT
+    datos_verificados = json.loads(requests.request('GET', f'{TOKENINFO_ENDPOINT}?id_token={datos.get("id_token")}').text)
+    
+    if datos_verificados.get('iss') != 'https://accounts.google.com' and datos_verificados['iss'] != 'accounts.google.com':
+        return ('Error al verificar el JWT', 500)
+        
+    if datos_verificados.get('aud') != CLIENT_ID:
+        return ('Error al verificar el JWT', 500)
 
-    return datos
+    if datetime.now() >= datetime.fromtimestamp(int(datos_verificados.get('exp'))):
+        return ('Error al verificar el JWT', 500)
+
+    # Extraer el email para usarlo en la pag de bienvenida
+    email = datos_verificados.get('email')
+
+    return render_template('welcome.html', email=email)
 
         
 class FlaskConfig:
