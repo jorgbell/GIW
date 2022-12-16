@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Preguntas y respuestas</title>
+</head>
+<body>
+    <nav>
+        <h1>La web para preguntas y respuestas</h1>
+        {% if request.user.username %}
+            Bienvenido {{ request.user.username }}
+            <a href="{% url 'preguntas:logout' %}"><button>Cerrar sesión</button></a>
+            <a href="{% url 'preguntas:index' %}"><button>Página principal</button></a>
+        {% else %}
+            No autenticado
+            <a href="{% url 'preguntas:login' %}"><button>Iniciar sesión</button></a>
+        {% endif %}
+    </nav>
+    {% block content %}
+    CONTENIDO
+    {% endblock %}
+</body>
+</html>
