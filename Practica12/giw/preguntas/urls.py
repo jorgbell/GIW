@@ -9,4 +9,5 @@ urlpatterns = [
     path('logout', views.logoutFunction, name='logout'),
     path('login', views.loginFunction, name='login'),
     path('<int:N>', views.preguntaN, name='preguntaN'),
+    path('<int:N>/respuesta', views.postRespuesta, name='respuestaPreguntaN'),
 ]

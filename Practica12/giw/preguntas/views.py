@@ -73,17 +73,13 @@ def logoutFunction(request):
 
 
 @login_required(login_url='preguntas:login')
-@require_http_methods(['GET', 'POST'])
+@require_GET
 def preguntaN(request, N):
 
     # Comprobar que la pregunta N existe
     pregunta = Pregunta.objects.get(pk=N)
     if not pregunta:
         return HttpResponseBadRequest("La pregunta no existe")
-
-    # Peticiones POST
-    if request.method == 'POST':
-        return postRespuesta(request, N)
 
     # Peticiones GET
     pregunta = Pregunta.objects.get(pk=N)
@@ -96,6 +92,12 @@ def preguntaN(request, N):
 @login_required(login_url='preguntas:login')
 @require_POST
 def postRespuesta(request, N):
+
+    # Comprobar que la pregunta N existe
+    pregunta = Pregunta.objects.get(pk=N)
+    if not pregunta:
+        return HttpResponseBadRequest("La pregunta no existe")
+
     form = RespuestaForm(request.POST)
     if not form.is_valid():
         return HttpResponseBadRequest(f"Error en los datos del formulario: {form.errors}")

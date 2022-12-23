@@ -26,7 +26,7 @@
         {% endif %}
     </div>
 
-    <form action="" method="post" class="pregunta-form">
+    <form action="{% url 'preguntas:respuestaPreguntaN' N=pregunta.pk %}" method="post" class="pregunta-form">
         {{ respuesta_form }}
         {% csrf_token %}
         <button type="submit">Subir respuesta</button>
