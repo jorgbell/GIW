@@ -39,6 +39,7 @@ def postPregunta(request):
     return redirect(reverse('preguntas:index'))
 
 
+# admin, admin
 # Pedrito, passpedro
 # Joselito, passjose
 @require_http_methods(['GET', 'POST'])
