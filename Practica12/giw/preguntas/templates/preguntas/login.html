@@ -1,6 +1,21 @@
-<form action="{% url 'preguntas:login' %}" method="post">
-    <table>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'loginStyle.css' %}">
+    <title>Preguntas y respuestas</title>
+</head>
+<body>
+    <h1>La web para preguntas y respuestas</h1>
+    <form action="{% url 'preguntas:login' %}" method="post">
+
         {{ login_form }}
-    </table>
-    <button class="submit">Iniciar sesión</button>
-</form>
+
+        {% csrf_token %}
+        <button class="submit">Iniciar sesión</button>
+    </form>
+</body>
+</html>

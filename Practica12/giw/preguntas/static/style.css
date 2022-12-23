@@ -1,0 +1,139 @@
+    *, *::after, *::before {
+        box-sizing: border-box;
+        font-family: Arial, Helvetica, sans-serif;
+    }
+
+    nav {
+        width: 100%;
+        padding-left: 20px;
+        padding-right: 20px;
+
+        display: flex;
+        align-items: center;
+
+        background-color: #cce5ff;
+        border-radius: 15px;
+        filter: drop-shadow(0 0 10px #00000015);
+    }
+
+    h1 {
+        min-width: max-content;
+    }
+
+    .toolbar {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        align-items: center;
+    }
+
+    button {
+        padding: 0.6em;
+        border-radius: 7px;
+        border: none;
+        background-color: #F5F5FF;
+    }
+
+    button:hover {
+        background-color: #93d4ff;
+        transition: 0.2s;
+    }
+
+    body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    main {
+        margin-top: 20px;
+        padding: 20px 30px;
+        min-width: 800px;
+        max-width: 1000px;
+
+        background-color: white;
+        border-radius: 15px;
+        filter: drop-shadow(0 0 10px #00000015);
+    }
+
+    ol {
+        padding-left: 20px;
+    }
+
+    .no-preguntas {
+        text-align: center;
+    }
+
+    .pregunta {
+        margin-bottom: 0.5em;
+        padding: 1em;
+        border-radius: 12px;
+    }
+
+    .pregunta:hover {
+        background-color: #F5F5FF;
+        transition: 0.2s;
+    }
+
+    .pregunta > a {
+        text-decoration: none;
+        color: black;
+    }
+
+    .pregunta-heading {
+        display: flex;
+        margin-bottom: 0.5em;
+    }
+
+    .pregunta-heading > h2 {
+        min-width: max-content;
+    }
+
+    .titulo-autor {
+        min-width: max-content;
+    }
+
+    .fecha {
+        width: 100%;
+
+        color: #888888;
+
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+    }
+
+    .pregunta-form-heading {
+        margin-top: 3em;
+        margin-bottom: -1em;
+        text-align: center;
+    }
+
+    .pregunta-form {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .pregunta-form > textarea, .pregunta-form > input {
+        width: 50%;
+        max-width: 50%;
+        min-width: 50%;
+        padding: 1em;
+        border-radius: 10px;
+        border: none;
+        background-color: #F5F5FF;
+    }
+
+    .pregunta-form > label {
+        margin-top: 1em;
+    }
+
+    .pregunta-form > button {
+        margin-top: 2em;
+    }
+
+    .respuestas {
+        margin-top: 3em;
+    }

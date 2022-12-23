@@ -11,6 +11,15 @@ class Pregunta(models.Model):
     fecha = models.DateTimeField(auto_now_add=True)
     autor = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
 
+
+    def getRespuestas(self):
+        return Respuesta.objects.filter(pregunta=self)
+
+
+    def nRespuestas(self):
+        return len(self.getRespuestas())
+
+
     def clean(self):
         self.titulo = escape(self.titulo)
         self.texto = escape(self.texto)

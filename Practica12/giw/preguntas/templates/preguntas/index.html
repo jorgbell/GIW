@@ -1,1 +1,33 @@
 {% extends 'preguntas/base.html' %}
+
+{% block content %}
+{% if not preguntas %}
+    <h3 class="no-preguntas">Todavía no hay preguntas</h3>
+{% else %}
+    <ol>
+        {% for p in preguntas %}
+            <li class="pregunta">
+                <a href="{% url 'preguntas:preguntaN' N=p.pk %}">
+                    <div class="pregunta-heading">
+                        <div class="titulo-autor">{{ p.titulo }} • {{ p.autor }}</div>
+                        <div class="fecha">{{ p.fecha }}</div>
+                    </div>
+                    <div>{{ p.nRespuestas }} respuesta(s)</div>
+                </a> 
+            </li>
+        {% endfor %}
+    
+    </ol>
+{% endif %}
+
+{% if request.user.username %}
+    <div class="pregunta-form-heading"><h3>Haz una pregunta</h3></div>
+    <form class="pregunta-form" action="{% url 'preguntas:index' %}" method="post">
+        {{ pregunta_form }}
+        {% csrf_token %}
+        <button type="submit">Subir pregunta</button>
+    </form>
+{% else %}
+{% endif %}
+
+{% endblock %}

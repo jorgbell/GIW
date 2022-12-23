@@ -1,14 +1,17 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
     <title>Preguntas y respuestas</title>
 </head>
 <body>
     <nav>
         <h1>La web para preguntas y respuestas</h1>
+        <div class="toolbar">
         {% if request.user.username %}
             Bienvenido {{ request.user.username }}
             <a href="{% url 'preguntas:logout' %}"><button>Cerrar sesión</button></a>
@@ -17,9 +20,13 @@
             No autenticado
             <a href="{% url 'preguntas:login' %}"><button>Iniciar sesión</button></a>
         {% endif %}
+        </div>
     </nav>
-    {% block content %}
-    CONTENIDO
-    {% endblock %}
+    <main>
+        {% block content %}
+        CONTENIDO
+        {% endblock %}  
+    </main>
+    
 </body>
 </html>

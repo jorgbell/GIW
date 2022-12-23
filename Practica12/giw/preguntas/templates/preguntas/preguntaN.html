@@ -1,0 +1,35 @@
+{% extends 'preguntas/base.html' %}
+
+{% block content %}
+    <div class="pregunta-heading">
+        <h2>{{ pregunta.titulo }} • {{ pregunta.autor }}</h2>
+        <div class="fecha">{{ pregunta.fecha }}</div>
+    </div>
+    {{ pregunta.texto }}
+
+    <div class="respuestas">
+        {% if not respuestas %}
+            <h4>Todavía no hay respuestas</h4>
+        {% else %}
+            <h4>Respuestas</h4>
+
+            {% for r in respuestas %}
+                <div class="pregunta">
+                    <div class="pregunta-heading">
+                        <div class="titulo-autor">• {{ r.autor }}</div>
+                        <div class="fecha">{{ r.fecha }}</div>
+                    </div>
+                    {{ r.texto }}
+                </div>
+            {% endfor %}
+
+        {% endif %}
+    </div>
+
+    <form action="" method="post" class="pregunta-form">
+        {{ respuesta_form }}
+        {% csrf_token %}
+        <button type="submit">Subir respuesta</button>
+    </form>
+    
+{% endblock %}
